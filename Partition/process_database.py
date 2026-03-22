@@ -1,6 +1,5 @@
-from collections import defaultdict
+import argparse
 import functools
-import random
 
 def compare(set1, set2):
     length = min(len(set1), len(set2))
@@ -35,7 +34,7 @@ def sort_database(database):
 
 def read_database(path):
     database = []
-    with open(path, "r") as read_file:
+    with open(path, "r", encoding="utf-8") as read_file:
         while True:
             line = read_file.readline()
             if not line:
@@ -45,11 +44,21 @@ def read_database(path):
             database.append(temp_line)
     return database
 
-dir = "datasets/kosarak/"
-database = read_database(dir + "origin.dat")
-database = clean_database(database)
-database = sort_database(database)
+def parse_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--input", required=True, help="Path to input dataset file.")
+    parser.add_argument("--output", required=True, help="Path to output dataset file.")
+    return parser.parse_args()
 
-with open(dir + "all.dat", 'w') as write_file:
-    for _set in database:
-        write_file.write(' '.join([str(v) for v in _set]) + "\n")
+def main():
+    args = parse_args()
+    database = read_database(args.input)
+    database = clean_database(database)
+    database = sort_database(database)
+
+    with open(args.output, 'w', encoding="utf-8") as write_file:
+        for _set in database:
+            write_file.write(' '.join([str(v) for v in _set]) + "\n")
+
+if __name__ == "__main__":
+    main()
